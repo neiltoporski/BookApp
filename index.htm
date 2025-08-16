@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Book App Login</title>
+</head>
+<body>
+
+  <!-- Login Form -->
+  <h1>Login</h1>
+  <form id="loginForm">
+	<!-- User email input -->
+	<input type="email" name="email" placeholder="Email" required>
+	<!-- User password input -->
+	<input type="password" name="password" placeholder="Password" required>
+	<!-- Submit login -->
+	<button type="submit">Login</button>
+  </form>
+
+  <!-- Registration Form -->
+  <h2>Or Create Account</h2>
+  <form id="registerForm">
+	<!-- First name field -->
+	<input name="firstName" placeholder="First Name" required>
+	<!-- Last name field -->
+	<input name="lastName" placeholder="Last Name" required>
+	<!-- Email address (used for login) -->
+	<input type="email" name="email" placeholder="Email" required>
+	<!-- Password (stored hashed in DB) -->
+	<input type="password" name="password" placeholder="Password" required>
+	<!-- Submit registration -->
+	<button type="submit">Register</button>
+  </form>
+
+  <script>
+// =====================================================
+// LOGIN FORM SUBMISSION
+// Add event listener for login form submit button
+// =====================================================
+
+	document.getElementById("loginForm").addEventListener("submit", async e => {
+	  e.preventDefault(); // Prevent default form submission behavior
+	  // e.target is the form element that triggers the submit event.
+	  // Collect form data. new FormData(e.target) gathers: All <input>, <textarea>, <select> elements. 
+	  // Their name attributes become keys
+	  
+	  const form = new FormData(e.target);
+	  
+	  // form gives you
+	  // Key		Value
+	  // email		user@example.com
+	  // password	1234
+	  
+	  // Then FormData is something like
+	  /*
+	  	fetch("login.php", {
+		  method: "POST",
+		  body: form
+	  });
+	  */
+	  
+	  // Send login credentials to the server
+	  const res = await fetch("login.php", {
+		method: "POST",
+		body: form
+	  });
+
+	  // Parse the JSON response from the server
+	  // What is res.status?  Was the result successful?
+	  // 200 OK – Everything worked as expected.
+	  // 201 Created – A new resource was successfully created (often after a POST request).
+	  // 204 No Content – Success, but there’s no content to return.
+	  
+	  const result = await res.json();
+
+	  // REDIRECT TO HOME PAGE IF LOGIN SUCCESSFUL
+	  if (result.success) {
+		window.location = "home.html";
+	  } else {
+		alert(result.error); // Show error message
+	  }
+	});
+
+// =====================================================
+// FORM REGISTRATION
+// Add event listener for registerForm form submit button
+// =====================================================
+
+	document.getElementById("registerForm").addEventListener("submit", async e => {
+	  e.preventDefault(); // Prevent default form submission behavior
+
+	  // Collect form data
+	  const form = new FormData(e.target);
+
+	  // Send registration data to the server
+	  const res = await fetch("register.php", {
+		method: "POST",
+		body: form
+	  });
+
+	  // Parse the response
+	  // This reads the body stream from the Response and parses it as JSON (assuming the server sent Content-Type: application/json).
+	  const result = await res.json();
+
+	  // Show success or error message
+	  if (result.success) {
+		alert("Registered! Please log in.");
+	  } else {
+		alert(result.error);
+	  }
+	});
+  </script>
+</body>
+</html>
